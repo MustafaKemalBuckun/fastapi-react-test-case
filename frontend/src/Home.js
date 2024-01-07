@@ -245,9 +245,13 @@ const handleConfirmDelete = async () => {
 };
 
 const handleSaveCard = async (card) => {
+  const numberRegex = /^[0-9]+$/;
   let cardData = card;
   if (card.card_no === '') {
     cardData = { label: card.label, card_no: null, status: card.status };
+  } else if (!numberRegex.test(card.card_no)) {
+    setActiveCardError('Card number must contain only numbers.');
+    return;
   }
   const endpoint = selectedCard ? `cards/update/${selectedCard.id}` : 'cards/add';
   const method = selectedCard ? 'PUT' : 'POST';

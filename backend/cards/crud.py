@@ -37,6 +37,10 @@ def create_card(db: Session, card: schemas.CardCreateUpdate, user_id: int):
 def update_card(db: Session, card_id: int, card: schemas.CardCreateUpdate):
     try:
         db_card = db.query(models.Card).filter(models.Card.id == card_id).one()
+
+        if db_card.card_no and not card.card_no.isdigit():
+            raise HTTPException(status_code=400, detail="The card number must contain only numbers.")
+
         active_cards = db.query(models.Card).filter(models.Card.user_id == db_card.user_id, models.Card.status == models.CardStatus.ACTIVE).count()
 
         if card.status == models.CardStatus.PASSIVE and db_card.status != models.CardStatus.PASSIVE and active_cards <= 1:
